@@ -32,7 +32,10 @@ block content
   each user of users
     div.flex
       .rank= user.rank
-      .player.overflow-ellipsis.overflow-hidden.whitespace-nowrap= user.username
+      a(
+        class='underline text-blue-500'
+        href=`/users/${user.username}`
+      ).player.overflow-ellipsis.overflow-hidden.whitespace-nowrap= user.username
       div(title=user.region).region.overflow-ellipsis.overflow-hidden.whitespace-nowrap= user.region
       .last-active= user.lastActive
       .links 
