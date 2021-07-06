@@ -13,4 +13,13 @@ export class User {
 
   @Property()
   email!: string
+
+  @Property()
+  region!: string
+
+  @Property({ name: 'last_active' })
+  lastActive!: Date
+
+  @Property()
+  twitter!: string
 }

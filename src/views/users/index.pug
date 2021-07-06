@@ -1,2 +1,15 @@
-each user of users
-  p= user.username
+extends ../layout.pug
+
+block content
+  div
+    each title of ["Rank", "Player", "Region", "Last Active", "Links"]
+      span= title
+
+  each user of users
+    div
+      span= user.rank
+      span= user.username
+      span= user.region
+      span= user.lastActive
+      span 
+        a(href=`https://twitter.com/${user.twitter}`)=`${user.twitter}`
