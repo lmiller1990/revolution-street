@@ -3,7 +3,7 @@
 BEGIN;
 
   create table songs (
-    id serial primary key,
+    id integer not null unique,
     name text not null
   );
 

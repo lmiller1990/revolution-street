@@ -31,7 +31,8 @@ const n = 100
 
   try {
     console.log('Persisting...')
-    orm.em.persist(users).flush();
+    await orm.em.persist(users).flush();
+    orm.close()
     console.log(`Persisted ${n} users.`)
   } catch (e) {
     console.log(e.message);
