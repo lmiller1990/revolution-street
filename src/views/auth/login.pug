@@ -1,18 +1,23 @@
 extends ../layout.pug
 
 block content
-  form(action="/auth/login", method="post")
-    label(for="username") Username:
-    input(
-      type="text" 
-      name="username" 
-      id="username"
-      class="border border-black"
-    )
+  form(action="/login" method="post" class="flex flex-col w-48 items-start")
+    div(class="flex flex-col")
+      label(for="email") Email:
+      input(
+        type="text" 
+        name="email" 
+        id="email"
+        class="w-full border border-black"
+      )
 
-    input(
-      type="text" 
-      name="username" 
-      id="username"
-      class="border border-black"
-    )
+    div(class="flex flex-col")
+      label(for="password") Password:
+      input(
+        type="password" 
+        name="password" 
+        id="password"
+        class="w-full border border-black"
+      )
+    
+    button(type="submit") Submit

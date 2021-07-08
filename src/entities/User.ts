@@ -1,25 +1,28 @@
 import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 
 @Entity({
-  tableName: 'users'
+  tableName: "users",
 })
 export class User {
-
   @PrimaryKey()
-  id!: number
+  id!: number;
 
   @Property()
-  username!: string
+  username!: string;
 
   @Property()
-  email!: string
+  email!: string;
 
   @Property()
-  region!: string
+  region!: string;
 
-  @Property({ name: 'last_active' })
-  lastActive!: Date
+  @Property({ name: "last_active" })
+  lastActive!: Date;
 
   @Property()
-  twitter!: string
+  twitter!: string;
+
+  // hashed password with bcrypt
+  @Property()
+  password!: string;
 }
