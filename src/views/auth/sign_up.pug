@@ -1,0 +1,23 @@
+extends ../layout.pug
+
+block content
+  form(action="/sign_up" method="post" class="flex flex-col w-48 items-start")
+    div(class="flex flex-col")
+      label(for="username") Username:
+      input(
+        type="text" 
+        name="username" 
+        id="username"
+        class="w-full border border-black"
+      )
+
+    div(class="flex flex-col")
+      label(for="password") Password:
+      input(
+        type="password" 
+        name="password" 
+        id="password"
+        class="w-full border border-black"
+      )
+    
+    button(type="submit") Submit
