@@ -1,6 +1,5 @@
 import { MikroORM } from "@mikro-orm/core";
 import { Request, Response, Router } from "express";
-import { updateNamespaceExportDeclaration } from "typescript";
 import { orm } from "..";
 import { Score } from "../entities/Score";
 import { Song } from "../entities/Song";
@@ -9,17 +8,21 @@ import { mustAuthenticate } from "../middleware/mustAuthenticate";
 
 export const submitScores = Router();
 
+export type Grade = "AAA" | "AA" | "A" | "B" | "C" | "D" | "E" | "-";
+
+export interface ScoreForm<T> {
+  marvelous: T;
+  perfect: T;
+  great: T;
+  good: T;
+  miss: T;
+  boo: T;
+  song: T;
+  grade: Grade;
+}
+
 export async function createScore(
-  form: {
-    marvelous: string;
-    perfect: string;
-    great: string;
-    good: string;
-    miss: string;
-    boo: string;
-    song: string;
-    grade: "AAA" | "AA" | "A" | "B" | "C" | "D" | "E";
-  },
+  form: ScoreForm<string>,
   { orm, userId }: { orm: MikroORM; userId: number }
 ) {
   const toNum = (num: string) => (num === "" ? 0 : parseInt(num, 10));

@@ -5,7 +5,7 @@ BEGIN;
   alter table users 
   add column region text,
   add column twitter text,
-  add column last_active timestamptz not null default now();
+  add column last_active timestamptz default now();
 
 
 COMMIT;

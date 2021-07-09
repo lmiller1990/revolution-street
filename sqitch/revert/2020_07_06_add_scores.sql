@@ -2,6 +2,7 @@
 
 BEGIN;
 
+  delete from scores;
   drop table scores;
 
 COMMIT;

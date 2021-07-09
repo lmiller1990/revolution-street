@@ -1,0 +1,42 @@
+extends ../layout.pug
+
+block content
+  style.
+    th, td {
+      padding: 2px 4px;
+    }
+
+    tr {
+      border: 1px solid;
+    }
+
+    th, tr > td {
+      border-right: 1px solid;
+    }
+
+  if !user
+    div= `${name} does not exist.`
+  else
+    h1= `Profile for ${user.username}`
+
+    table
+      thead
+        tr
+          th(class="song-title") Song
+          th Grade
+          th Perf
+          th Great
+          th Good
+          th Miss
+          th Boo
+
+      tbody
+        each score of scores
+          tr(class=`${score.grade === "AAA" ? "bg-blue-200" : score.grade === "AA" ? "bg-yellow-200" : ""}`)
+            td(class="song-title")= score.song
+            td= score.grade
+            td= score.perfect
+            td= score.great
+            td= score.good
+            td= score.miss
+            td= score.boo

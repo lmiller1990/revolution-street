@@ -1,19 +1,20 @@
 import { MikroORM } from "@mikro-orm/core";
-import { app } from "./app";
+import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { Score } from "./entities/Score";
 import { Song } from "./entities/Song";
 import { User } from "./entities/User";
 
-export let orm: MikroORM
+const n = 100
 
-(async () => {
-  orm = await MikroORM.init({
+;(async () => {
+  const orm = await MikroORM.init({
     entities: [Song, User, Score],
     dbName: "revolution_street",
-    debug: true,
     type: "postgresql",
     // clientUrl: '...',
-  });
+  }) as MikroORM<PostgreSqlDriver>;
 
-  app.listen('8000', () => console.log('Started on port 8000'))
+
+
+  orm.close()
 })();

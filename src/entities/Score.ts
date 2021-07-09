@@ -1,4 +1,7 @@
-import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import { Grade } from "../controllers/submitScores";
+import { Song } from "./Song";
+import { User } from "./User";
 
 @Entity({
   tableName: "scores",
@@ -29,8 +32,14 @@ export class Score {
   songId!: number;
 
   @Property()
-  grade!: string;
+  grade!: Grade;
 
   @Property({ name: "user_id" })
   userId!: number;
+
+  @ManyToOne(() => Song, { nullable: false })
+  song!: Song;
+  
+  @ManyToOne(() => User, { nullable: false })
+  user!: User;
 }

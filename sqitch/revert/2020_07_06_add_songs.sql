@@ -2,6 +2,7 @@
 
 BEGIN;
 
+  delete from songs;
   drop table songs;
 
 COMMIT;

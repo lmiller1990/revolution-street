@@ -1,9 +1,8 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import bcrypt from "bcrypt";
 import passport from "passport";
 import { orm } from "..";
 import { User } from "../entities/User";
-import { isNamedExportBindings } from "typescript";
 
 export const auth = Router();
 
@@ -27,9 +26,9 @@ auth.post(
 );
 
 auth.get("/log_out", async (req: Request, res: Response) => {
-  req.logout()
+  req.logout();
   res.redirect("/");
-})
+});
 
 auth.get("/sign_up", async (req: Request, res: Response) => {
   res.render("./auth/sign_up");
