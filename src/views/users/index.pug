@@ -30,16 +30,25 @@ block content
     .links Links
 
   each user of users
-    div.flex
+    div(class="flex")
       .rank= user.rank
       a(
-        class='underline text-blue-500'
+        class="underline text-blue-500 player overflow-ellipsis overflow-hidden whitespace-nowrap"
         href=`/users/${user.username}`
-      ).player.overflow-ellipsis.overflow-hidden.whitespace-nowrap= user.username
-      div(title=user.region).region.overflow-ellipsis.overflow-hidden.whitespace-nowrap= user.region
-      .last-active= user.lastActive
-      .links 
-        a(
-          href=`https://twitter.com/${user.twitter}`
-          class="underline text-blue-500"
-        )=`${user.twitter}`
+      )= user.username
+
+      div(
+        title=user.region 
+        class="region overflow-ellipsis overflow-hidden whitespace-nowrap"
+      )= user.region
+
+      div(class="last-active")= user.lastActive
+
+      div(class="links")
+        if user.twitter
+          a(
+            href=`https://twitter.com/${user.twitter}`
+            class="underline text-blue-500"
+          )=`${user.twitter}`
+        else
+          | -

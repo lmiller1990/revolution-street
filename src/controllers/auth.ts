@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import passport from "passport";
 import { orm } from "..";
 import { User } from "../entities/User";
+import { countries } from "../data/countries";
 
 export const auth = Router();
 
@@ -31,22 +32,25 @@ auth.get("/log_out", async (req: Request, res: Response) => {
 });
 
 auth.get("/sign_up", async (req: Request, res: Response) => {
-  res.render("./auth/sign_up");
+  res.render("./auth/sign_up", {
+    countries,
+  });
 });
 
 auth.post("/sign_up", async (req: Request, res: Response) => {
-  const { username, password, email } = req.body;
+  const { username, password, email, region } = req.body;
   const hashed = await hashPassword(password);
   const user = orm.em.create(User, {
     email,
     username,
+    region,
     password: hashed,
   });
 
   await orm.em.persist(user).flush();
 
   await new Promise((resolve) => {
-    req.login({ email, password: hashed }, (err) => {
+    req.login({ ...user, email, password: hashed }, (err) => {
       if (!err) {
         resolve(res.redirect("/"));
       } else {

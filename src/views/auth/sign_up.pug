@@ -1,7 +1,7 @@
 extends ../layout.pug
 
 block content
-  form(action="/sign_up" method="post" class="flex flex-col w-48 items-start")
+  form(action="/sign_up" id="sign-up" method="post" class="flex flex-col w-48 items-start")
     div(class="flex flex-col")
       label(for="email") Email:
       input(
@@ -27,5 +27,13 @@ block content
         id="password"
         class="w-full border border-black"
       )
+
+    label(for="countries") Region:
+    select(name="region" form="sign-up" class="border border-purple-500 p-1")
+      each country of countries
+        if country.code == "AU"
+          option(value=country.code selected)= `${country.name} (${country.flag})`
+        else
+          option(value=country.code)= `${country.name} (${country.flag})`
     
     button(type="submit") Submit

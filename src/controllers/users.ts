@@ -4,6 +4,7 @@ import { Request, Response, Router } from "express";
 import { DateTime } from "luxon";
 
 import { orm } from "..";
+import { countryMap } from "../data/countries";
 import { Score } from "../entities/Score";
 import { Song } from "../entities/Song";
 import { User } from "../entities/User";
@@ -14,11 +15,12 @@ export const users = Router();
 const userVM = (users: User[]) => {
   return users.map((user, idx) => {
     const lastActive = DateTime.fromJSDate(user.lastActive);
+    const region = countryMap[user.region]
 
     return {
       lastActive: lastActive.toFormat("y-LL-dd hh:mm"),
       rank: idx + 1,
-      region: user.region,
+      region: region ? `${region.name} ${region.flag}` : "-",
       username: user.username,
       twitter: user.twitter,
     };
@@ -85,6 +87,6 @@ users.get("/:username", async (req: Request, res: Response) => {
   res.render("./users/show", {
     user,
     name: req.params.username,
-    scores: await showUser(user!, orm as MikroORM<PostgreSqlDriver>),
+    scores: user ? await showUser(user!, orm as MikroORM<PostgreSqlDriver>) : [],
   });
 });

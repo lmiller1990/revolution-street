@@ -27,6 +27,7 @@ export async function createScore(
 ) {
   const toNum = (num: string) => (num === "" ? 0 : parseInt(num, 10));
 
+console.log(userId)
   const song = await orm.em.findOne(Song, { id: parseInt(form.song, 10) });
   const score = orm.em.create(Score, {
     marvelous: toNum(form.marvelous),
@@ -55,6 +56,7 @@ submitScores.post(
   "/",
   mustAuthenticate,
   async (req: Request, res: Response) => {
+    console.log(req.user);
     await createScore(req.body, { orm, userId: (req.user as User).id });
     res.render("./index");
   }
