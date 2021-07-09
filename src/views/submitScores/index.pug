@@ -1,4 +1,46 @@
 extends ../layout.pug
 
 block content
-  | Submit your scores - Coming soon!
+  style.
+    .timings {
+      width: 100px;
+    }
+
+    select {
+      width: 400px;
+    }
+      
+    label {
+      text-transform: capitalize;
+    }
+
+  form(id="submit-scores" action="/submit_scores" method="post" class="flex flex-col items-start")
+    label(for="song") Song:
+    select(name="song" class="border border-purple-500 p-1")
+      each song of songs
+        option(value=song.id)= song.name
+
+    div
+      each timing of ["marvelous", "perfect", "great", "good", "miss", "boo"]
+        div(class="w-full flex my-1")
+          label(for=timing class="timings")= `${timing}:`
+          input(
+            type="number" 
+            name=timing 
+            id=timing
+            placeholder=0
+            class="border border-black p-1"
+          )
+
+    label(for="grade") grade:
+    select(
+      class="border border-purple-500 p-1" 
+      required 
+      name="grade" 
+      form="submit-scores"
+      selected="AAA"
+    )
+      each grade of ["AAA", "AA", "A", "B", "C", "D", "E"]
+        option(value=grade)= grade
+      
+    button(type="submit") Submit
