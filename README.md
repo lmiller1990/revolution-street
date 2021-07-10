@@ -149,3 +149,7 @@ Nginx Full (v6)            ALLOW       Anywhere (v6)
 ```sh
 sudo certbot --nginx -d revolutionstreet.xyz -d www.revolutionstreet.xyz
 ```
+
+## Start the app
+
+DB_USER=XXXX DB_PASSWORD=XXX node src/index.js
