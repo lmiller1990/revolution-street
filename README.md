@@ -113,3 +113,39 @@ cd sqitch
 sqitch deploy
 npm run build
 pm2 start src/index.js
+```
+
+## SSL
+
+Let's Encrypt is good.
+
+```sh
+sudo apt install certbot python3-certbot-nginx
+```
+
+Enable 443
+
+```
+sudo ufw allow 'Nginx Full'
+sudo ufw delete allow 'Nginx HTTP'
+
+# then
+sudo ufw status
+sudo ufw enable
+sudo ufw reload
+
+Status: active
+
+To                         Action      From
+--                         ------      ----
+80/tcp                     ALLOW       Anywhere
+Nginx Full                 ALLOW       Anywhere
+80/tcp (v6)                ALLOW       Anywhere (v6)
+Nginx Full (v6)            ALLOW       Anywhere (v6)
+```
+
+## Get a Cert
+
+```sh
+sudo certbot --nginx -d revolutionstreet.xyz -d www.revolutionstreet.xyz
+```
