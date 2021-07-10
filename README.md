@@ -17,6 +17,8 @@ Ubuntu:
 
 ```sh
 apt-get install sqitch libdbd-pg-perl postgresql-client
+# then
+SQITCH_USERNAME=USERNAME_HERE SQITCH_PASSWORD=XXXX sqitch deploy
 ```
 
 ### Postgres
