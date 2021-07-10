@@ -110,7 +110,7 @@ submitScores.get(
     );
 
     if (!score) {
-      return res.redirect(`./users/${user.username}`);
+      return res.redirect(`/users/${user.username}`);
     }
 
     res.render("./submitScores/edit", { score });
@@ -154,9 +154,9 @@ submitScores.post(
         orm as MikroORM<PostgreSqlDriver>
       );
 
-      return res.redirect(`//users/${user.username}`);
+      return res.redirect(`/users/${user.username}`);
     } catch (e) {
-      return res.redirect(`//users/${user.username}`);
+      return res.redirect(`/users/${user.username}`);
     }
   }
 );
@@ -167,6 +167,6 @@ submitScores.post(
   async (req: Request, res: Response) => {
     const user = req.user as User;
     await createScore(req.body, { orm, userId: (req.user as User).id });
-    return res.redirect(`//users/${user.username}`);
+    return res.redirect(`/users/${user.username}`);
   }
 );
