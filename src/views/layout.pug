@@ -16,6 +16,14 @@ head
       width: 1080px;
     }
 
+    button {
+      border: 1px solid rgb(139 92 246);
+      padding: 5px;
+      width: 100px;
+      margin: 10px 0 0 0;
+    }
+
+
   title Revolution Street
 
 main(class="flex justify-center w-full")
@@ -38,10 +46,11 @@ main(class="flex justify-center w-full")
     div(class="flex")
       div(class="border-4 p-4 w-48")
         div(class="flex flex-col")
-          a(class="text-lg" href="/users") Rankings
-          a(class="text-lg" href="/profile") Profile
-          a(class="text-lg" href="/submit_scores") Submit Scores
           a(class="text-lg" href="/") News
+          a(class="text-lg" href="/users") Rankings
+          if currentUser
+            a(class="text-lg" href=`/users/${currentUser.username}`) Profile
+          a(class="text-lg" href="/submit_scores") Submit Scores
 
       div(class="border-4 border-l-0 p-4 w-full")
         div

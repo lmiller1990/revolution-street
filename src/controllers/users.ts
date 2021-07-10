@@ -46,35 +46,47 @@ const showUser = async (user: User, orm: MikroORM<PostgreSqlDriver>) => {
     };
   }, {});
 
-  const summary: Array<Omit<ScoreForm<string>, "song"> & { song: string }> =
-    songs.map((song) => {
-      const score = songIdAsKey[song.id];
-      if (score) {
-        return {
-          marvelous: (score.marvelous || 0).toString(),
-          perfect: (score.perfect || 0).toString(),
-          great: (score.great || 0).toString(),
-          good: (score.good || 0).toString(),
-          boo: (score.boo || 0).toString(),
-          miss: (score.miss || 0).toString(),
-          grade: score.grade,
-          song: song.name,
-        };
-      }
-
+  const summary: Array<
+    Omit<ScoreForm<string>, "song"> & {
+      song: { id: string; name: string };
+      id?: string;
+    }
+  > = songs.map((song) => {
+    const score = songIdAsKey[song.id];
+    if (score) {
       return {
-        marvelous: '-',
-        perfect: '-',
-        great: '-',
-        good: '-',
-        boo: '-',
-        miss: '-',
-        grade: '-',
-        song: song.name,
+        id: score.id.toString(),
+        marvelous: (score.marvelous || 0).toString(),
+        perfect: (score.perfect || 0).toString(),
+        great: (score.great || 0).toString(),
+        good: (score.good || 0).toString(),
+        boo: (score.boo || 0).toString(),
+        miss: (score.miss || 0).toString(),
+        grade: score.grade,
+        song: {
+          name: song.name,
+          id: song.id.toString()
+        },
       };
-    });
+    }
 
-  return summary.sort((x, y) => x.song.localeCompare(y.song));
+    return {
+      id: undefined,
+      marvelous: "-",
+      perfect: "-",
+      great: "-",
+      good: "-",
+      boo: "-",
+      miss: "-",
+      grade: "-",
+      song: {
+        name: song.name,
+        id: song.id.toString()
+      },
+    };
+  });
+
+  return summary.sort((x, y) => x.song.name.localeCompare(y.song.name));
 };
 
 users.get("/", async (req: Request, res: Response) => {
@@ -84,9 +96,13 @@ users.get("/", async (req: Request, res: Response) => {
 
 users.get("/:username", async (req: Request, res: Response) => {
   const user = await orm.em.findOne(User, { username: req.params.username });
+  console.log('user', user)
+  const currentUser = req.user as User
   res.render("./users/show", {
     user,
     name: req.params.username,
+    flag: user && user.region && countryMap[user.region]?.flag,
+    canEdit: currentUser && user && currentUser.id === user.id,
     scores: user ? await showUser(user!, orm as MikroORM<PostgreSqlDriver>) : [],
   });
 });

@@ -15,14 +15,18 @@ block content
     }
 
   form(id="submit-scores" action="/submit_scores" method="post" class="flex flex-col items-start")
-    label(for="song") Song:
-    select(name="song" class="border border-purple-500 p-1")
-      each song of songs
-        option(value=song.id)= song.name
+    div(class="flex")
+      label(for="song" class="timings") Song:
+      select(name="song" class="border border-purple-500 p-1")
+        each song of songs
+          if song.id.toString() === songToScore
+            option(value=song.id selected)= song.name
+          else
+            option(value=song.id)= song.name
 
     div
       each timing of ["marvelous", "perfect", "great", "good", "miss", "boo"]
-        div(class="w-full flex my-1")
+        div(class="w-full flex my-2")
           label(for=timing class="timings")= `${timing}:`
           input(
             type="number" 
@@ -32,15 +36,16 @@ block content
             class="border border-black p-1"
           )
 
-    label(for="grade") grade:
-    select(
-      class="border border-purple-500 p-1" 
-      required 
-      name="grade" 
-      form="submit-scores"
-      selected="AAA"
-    )
-      each grade of ["AAA", "AA", "A", "B", "C", "D", "E"]
-        option(value=grade)= grade
+    div(class="flex")
+      label(for="grade" class="timings") grade:
+      select(
+        class="border border-purple-500 p-1" 
+        required 
+        name="grade" 
+        form="submit-scores"
+        selected="AAA"
+      )
+        each grade of ["AAA", "AA", "A", "B", "C", "D", "E"]
+          option(value=grade)= grade
       
     button(type="submit") Submit

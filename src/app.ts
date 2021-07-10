@@ -41,6 +41,7 @@ app.set("views", "./src/views");
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.locals.authenticated = !!req.user;
+  res.locals.currentUser = req.user as User
   next();
 });
 

@@ -1,4 +1,5 @@
 import { MikroORM } from "@mikro-orm/core";
+import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { Request, Response, Router } from "express";
 import { orm } from "..";
 import { Score } from "../entities/Score";
@@ -27,7 +28,6 @@ export async function createScore(
 ) {
   const toNum = (num: string) => (num === "" ? 0 : parseInt(num, 10));
 
-console.log(userId)
   const song = await orm.em.findOne(Song, { id: parseInt(form.song, 10) });
   const score = orm.em.create(Score, {
     marvelous: toNum(form.marvelous),
@@ -44,20 +44,112 @@ console.log(userId)
   return orm.em.persist(score).flush();
 }
 
-submitScores.get("/", mustAuthenticate, async (req: Request, res: Response) => {
-  const songs = (await orm.em.find(Song, {})).sort((x, y) =>
-    x.name.localeCompare(y.name)
-  );
+submitScores.get(
+  "/",
+  mustAuthenticate,
+  async (req: Request<{}, {}, {}, { song_id: string }>, res: Response) => {
+    const songToScore = req.query.song_id;
+    const songs = (await orm.em.find(Song, {})).sort((x, y) =>
+      x.name.localeCompare(y.name)
+    );
 
-  res.render("./submitScores/index", { songs });
-});
+    res.render("./submitScores/index", { songs, songToScore });
+  }
+);
+
+async function editScore(
+  scoreId: string,
+  userId: number | undefined,
+  orm: MikroORM<PostgreSqlDriver>
+) {
+  const id = parseInt(scoreId, 10);
+
+  const score = await orm.em
+    .createQueryBuilder(Score)
+    .select("*")
+    .where({ id, userId })
+    .getResult();
+
+  if (!score || score.length === 0) {
+    return;
+  }
+
+  await orm.em.populate(score, "song");
+
+  return score[0];
+}
+
+submitScores.get(
+  "/:score_id/edit",
+  mustAuthenticate,
+  async (req: Request<{ score_id: string }>, res: Response) => {
+    const user = req.user as User;
+
+    const score = await editScore(
+      req.params.score_id,
+      user.id,
+      orm as MikroORM<PostgreSqlDriver>
+    );
+
+    if (!score) {
+      return res.redirect(`./users/${user.username}`);
+    }
+
+    res.render("./submitScores/edit", { score });
+  }
+);
+
+async function updateScore(
+  form: ScoreForm<string> & { id: string },
+  userId: number | undefined,
+  orm: MikroORM<PostgreSqlDriver>
+) {
+  const score = await orm.em.findOneOrFail(Score, {
+    id: parseInt(form.id, 10),
+  });
+
+  if (!score || score.userId !== userId) {
+    throw Error(`Not authorized to edit this score`);
+  }
+
+  score.marvelous = parseInt(form.marvelous, 10);
+  score.perfect = parseInt(form.perfect, 10);
+  score.great = parseInt(form.great, 10);
+  score.good = parseInt(form.good, 10);
+  score.boo = parseInt(form.boo, 10);
+  score.miss = parseInt(form.miss, 10);
+  score.grade = form.grade;
+
+  return orm.em.persist(score).flush();
+}
+
+submitScores.post(
+  "/:score_id",
+  mustAuthenticate,
+  async (req: Request<{ score_id: string }>, res: Response) => {
+    const user = req.user as User;
+
+    try {
+      await updateScore(
+        req.body,
+        user.id,
+        orm as MikroORM<PostgreSqlDriver>
+      );
+
+      return res.redirect(`./users/${user.username}`);
+    } catch (e) {
+      return res.redirect(`./users/${user.username}`);
+    }
+  }
+);
 
 submitScores.post(
   "/",
   mustAuthenticate,
   async (req: Request, res: Response) => {
-    console.log(req.user);
+    const user = req.user as User;
+
     await createScore(req.body, { orm, userId: (req.user as User).id });
-    res.render("./index");
+    res.redirect(`/users/${user.username}`);
   }
 );

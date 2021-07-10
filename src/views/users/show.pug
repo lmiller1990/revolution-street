@@ -17,26 +17,43 @@ block content
   if !user
     div= `${name} does not exist.`
   else
-    h1= `Profile for ${user.username}`
+    h1(class="text-2xl mb-2")= `Profile for ${user.username}`
+    div(class="flex mb-2")
+      if user.twitter
+        a(href=`https://twitter.com/${user.twitter}` class="underline text-blue-500")= `@${user.twitter}`
+      if flag
+        div(class="mx-2")= `${flag}`
+      if canEdit
+        a(class="mx-2" href=`/users/${name}/edit`) Edit
 
     table
       thead
         tr
           th(class="song-title") Song
           th Grade
+          th Marv
           th Perf
           th Great
           th Good
           th Miss
           th Boo
+          if canEdit
+            th Edit
 
       tbody
         each score of scores
           tr(class=`${score.grade === "AAA" ? "bg-blue-200" : score.grade === "AA" ? "bg-yellow-200" : ""}`)
-            td(class="song-title")= score.song
+            td(class="song-title")= score.song.name
             td= score.grade
+            td= score.marvelous
             td= score.perfect
             td= score.great
             td= score.good
             td= score.miss
             td= score.boo
+            if canEdit
+              td
+                if score.id
+                  a(href=`/submit_scores/${score.id}/edit`)= "Edit"
+                else
+                  a(href=`/submit_scores?song_id=${score.song.id}`)= "Edit"
