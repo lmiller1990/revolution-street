@@ -7,13 +7,25 @@ head
     href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
   )
   style.
+    html, body, main {
+      height: 100%;
+    }
+
     a {
       cursor: pointer;
       text-decoration: underline;
     }
 
+    .nav-link {
+      white-space: nowrap;
+    }
+
+    .no-decoration {
+      text-decoration: none;
+    }
+
     .content {
-      width: 1080px;
+      width: 767px;
     }
 
     button {
@@ -23,11 +35,45 @@ head
       margin: 10px 0 0 0;
     }
 
+    .has-border {
+      border: 1px solid;
+    }
+
+    .no-border-right {
+      border-right: none;
+    }
+
 
   title Revolution Street
 
-main(class="flex justify-center w-full")
-  div(class="flex flex-col content")
+//- mobile
+main(class="md:hidden")
+  a(class="no-decoration" href="/")
+    div(class="flex justify-center")
+      div(class="flex justify-between p-4")
+        div(class="flex justify-center flex-col items-center")
+          h1(class="text-4xl")
+            | Revolution Street
+          h4(class="text-2xl")
+            | DDR Extreme Score Tracker
+
+  div(class="mx-2 my-4 flex justify-around border border-black")
+    a(href="/users") Rankings
+
+    if currentUser
+      a(href=`/users/${currentUser.username}`) Profile
+      a(href="/submit_scores") Submit Scores
+      a(href="/log_out") Log out
+    else
+      a(href="/sign_up") Sign up
+      a(href="/login") Log in
+
+  div(class="mx-6 my-6 overflow-scroll")
+    block content
+
+//- desktop
+main(class="justify-center w-full hidden md:flex")
+  div(class="flex flex-col h-100")
     div(class="flex justify-between p-4")
       div(class="flex justify-center flex-col")
         h1(class="text-4xl")
@@ -43,15 +89,15 @@ main(class="flex justify-center w-full")
           a(href="/login") Log in
     
 
-    div(class="flex")
-      div(class="border-4 p-4 w-48")
+    div(class="flex pb-12")
+      div(class="p-4 has-border no-border-right")
         div(class="flex flex-col")
-          a(class="text-lg" href="/") News
-          a(class="text-lg" href="/users") Rankings
+          a(class="nav-link text-lg" href="/") News
+          a(class="nav-link text-lg" href="/users") Rankings
           if currentUser
-            a(class="text-lg" href=`/users/${currentUser.username}`) Profile
-          a(class="text-lg" href="/submit_scores") Submit Scores
+            a(class="nav-link text-lg" href=`/users/${currentUser.username}`) Profile
+          a(class="nav-link text-lg" href="/submit_scores") Submit Scores
 
-      div(class="border-4 border-l-0 p-4 w-full")
-        div
+      div(class="p-4 w-full has-border")
+        div(class="content")
           block content

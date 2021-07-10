@@ -9,13 +9,19 @@ block content
     select {
       width: 400px;
     }
+
+    @media (max-width: 767px) {
+      select {
+        width: 200px;
+      }
+    }
       
     label {
       text-transform: capitalize;
     }
 
   form(id="submit-scores" action=`/submit_scores/${score.id}` method="post" class="flex flex-col items-start")
-    h1= `Editing score for ${score.song.name}`
+    h1(class="text-2xl my-2")= `Editing score for ${score.song.name}`
 
     input(type="hidden" name="id" value=score.id)
 
@@ -37,10 +43,12 @@ block content
       class="border border-purple-500 p-1" 
       required 
       name="grade" 
-      form="submit-scores"
       selected=score.grade
     )
       each grade of ["AAA", "AA", "A", "B", "C", "D", "E"]
-        option(value=grade)= grade
+        if grade == score.grade
+          option(value=grade selected)= grade
+        else
+          option(value=grade)= grade
       
     button(type="submit") Submit

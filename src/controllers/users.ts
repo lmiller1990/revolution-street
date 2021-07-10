@@ -21,6 +21,7 @@ const userVM = (users: User[]) => {
       lastActive: lastActive.toFormat("y-LL-dd hh:mm"),
       rank: idx + 1,
       region: region ? `${region.name} ${region.flag}` : "-",
+      flag: region ? region.flag : "",
       username: user.username,
       twitter: user.twitter,
     };

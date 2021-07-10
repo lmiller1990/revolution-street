@@ -29,6 +29,24 @@ export async function createScore(
   const toNum = (num: string) => (num === "" ? 0 : parseInt(num, 10));
 
   const song = await orm.em.findOne(Song, { id: parseInt(form.song, 10) });
+
+  if (!song) {
+    throw Error(`Could not create score for unknown song with id: ${form.song}.`)
+  }
+
+  const alreadyHasScore = await orm.em.findOne(Score, { songId: song.id, userId });
+
+  if (alreadyHasScore) {
+    alreadyHasScore.marvelous = toNum(form.marvelous)
+    alreadyHasScore.perfect = toNum(form.perfect)
+    alreadyHasScore.great = toNum(form.great)
+    alreadyHasScore.good = toNum(form.good)
+    alreadyHasScore.miss = toNum(form.miss)
+    alreadyHasScore.boo = toNum(form.boo)
+    alreadyHasScore.grade = form.grade
+    return orm.em.persist(alreadyHasScore).flush()
+  }
+
   const score = orm.em.create(Score, {
     marvelous: toNum(form.marvelous),
     perfect: toNum(form.perfect),
@@ -148,8 +166,7 @@ submitScores.post(
   mustAuthenticate,
   async (req: Request, res: Response) => {
     const user = req.user as User;
-
     await createScore(req.body, { orm, userId: (req.user as User).id });
-    res.redirect(`/users/${user.username}`);
+    return res.redirect(`./users/${user.username}`);
   }
 );

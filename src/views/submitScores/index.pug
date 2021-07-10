@@ -9,6 +9,12 @@ block content
     select {
       width: 400px;
     }
+
+    @media (max-width: 767px) {
+      select {
+        width: 200px;
+      }
+    }
       
     label {
       text-transform: capitalize;
@@ -42,10 +48,11 @@ block content
         class="border border-purple-500 p-1" 
         required 
         name="grade" 
-        form="submit-scores"
-        selected="AAA"
       )
         each grade of ["AAA", "AA", "A", "B", "C", "D", "E"]
-          option(value=grade)= grade
+          if grade === "AAA"
+            option(value=grade selected)= grade
+          else
+            option(value=grade)= grade
       
     button(type="submit") Submit

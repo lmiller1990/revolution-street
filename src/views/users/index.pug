@@ -7,11 +7,11 @@ block content
     }
 
     .player {
-      width: 200px;
+      width: 150px;
     }
 
     .region {
-      width: 250px;
+      width: 150px;
     }
 
     .last-active {
@@ -21,34 +21,47 @@ block content
     .links {
       width: 200px;
     }
+  
+  div(class="md:hidden")
+    h1(class="text-2xl") Rankings
+    each user, idx in users
+      div
+        a(
+          class="overflow-ellipsis overflow-hidden whitespace-nowrap no-decoration"
+          href=`/users/${user.username}`
+        )
+          span(class="mr-4")= `#${idx + 1}`
+          span(class="mr-4 underline text-blue-500 ")= user.username 
+          span= `${user.flag}`
 
-  div.flex
-    .rank Rank
-    .player Player
-    .region Region
-    .last-active Last Active
-    .links Links
+  div(class="hidden md:block")
+    div.flex
+      .rank Rank
+      .player Player
+      .region Region
+      .last-active Last Active
+      .links Links
 
-  each user of users
-    div(class="flex")
-      .rank= user.rank
-      a(
-        class="underline text-blue-500 player overflow-ellipsis overflow-hidden whitespace-nowrap"
-        href=`/users/${user.username}`
-      )= user.username
+    each user of users
+      div(class="flex")
+        .rank= user.rank
+        a(
+          class="underline text-blue-500 player overflow-ellipsis overflow-hidden whitespace-nowrap"
+          href=`/users/${user.username}`
+        )= user.username
 
-      div(
-        title=user.region 
-        class="region overflow-ellipsis overflow-hidden whitespace-nowrap"
-      )= user.region
+        div(
+          title=user.region 
+          class="region overflow-ellipsis overflow-hidden whitespace-nowrap"
+        )= user.region
 
-      div(class="last-active")= user.lastActive
+        div(class="last-active")= user.lastActive
 
-      div(class="links")
-        if user.twitter
-          a(
-            href=`https://twitter.com/${user.twitter}`
-            class="underline text-blue-500"
-          )=`${user.twitter}`
-        else
-          | -
+        div(class="links")
+          if user.twitter
+            a(
+              href=`https://twitter.com/${user.twitter}`
+              class="underline text-blue-500"
+            )=`${user.twitter}`
+          else
+            | -

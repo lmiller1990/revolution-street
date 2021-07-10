@@ -23,8 +23,8 @@ block content
         a(href=`https://twitter.com/${user.twitter}` class="underline text-blue-500")= `@${user.twitter}`
       if flag
         div(class="mx-2")= `${flag}`
-      if canEdit
-        a(class="mx-2" href=`/users/${name}/edit`) Edit
+      //- if canEdit
+      //-   a(class="mx-2" href=`/users/${name}/edit`) Edit
 
     table
       thead
@@ -42,7 +42,7 @@ block content
 
       tbody
         each score of scores
-          tr(class=`${score.grade === "AAA" ? "bg-blue-200" : score.grade === "AA" ? "bg-yellow-200" : ""}`)
+          tr(class=`${score.grade === "AAA" ? "bg-blue-200" : score.grade === "AA" ? "bg-yellow-200" : score.grade === "A" ? "bg-green-300" : ""}`)
             td(class="song-title")= score.song.name
             td= score.grade
             td= score.marvelous
