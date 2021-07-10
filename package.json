@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
     "seed": "ts-node src/seed.ts",
-    "build": "typescript"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
