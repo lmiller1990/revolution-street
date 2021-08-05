@@ -28,6 +28,11 @@ const userVM = (users: User[]) => {
   });
 };
 
+interface ScoreSummary extends Omit<ScoreForm<string>, "song"> {
+  song: { id: string; name: string };
+  id?: string;
+}
+
 const showUser = async (user: User, orm: MikroORM<PostgreSqlDriver>) => {
   const songs = (await orm.em.find(Song, {})).sort((x, y) =>
     y.name.localeCompare(x.name)
@@ -47,12 +52,7 @@ const showUser = async (user: User, orm: MikroORM<PostgreSqlDriver>) => {
     };
   }, {});
 
-  const summary: Array<
-    Omit<ScoreForm<string>, "song"> & {
-      song: { id: string; name: string };
-      id?: string;
-    }
-  > = songs.map((song) => {
+  const summary: ScoreSummary[] = songs.map((song) => {
     const score = songIdAsKey[song.id];
     if (score) {
       return {
@@ -97,13 +97,31 @@ users.get("/", async (req: Request, res: Response) => {
 
 users.get("/:username", async (req: Request, res: Response) => {
   const user = await orm.em.findOne(User, { username: req.params.username });
-  console.log('user', user)
   const currentUser = req.user as User
+
+  let scores = user ? await showUser(user!, orm as MikroORM<PostgreSqlDriver>) : []
+
+  const foundLetter = new Set<string>()
+  scores = scores.map<ScoreSummary & { anchor?: string }>((score) => {
+    const startsWith = score.song.name[0].toUpperCase()
+    if (foundLetter.has(startsWith)) {
+      return score
+    }
+
+    foundLetter.add(startsWith)
+
+    return {
+      ...score,
+      anchor: startsWith
+    }
+  })
+
   res.render("./users/show", {
     user,
+    letters: [...foundLetter].sort((x, y) => x.localeCompare(y)),
     name: req.params.username,
     flag: user && user.region && countryMap[user.region]?.flag,
     canEdit: currentUser && user && currentUser.id === user.id,
-    scores: user ? await showUser(user!, orm as MikroORM<PostgreSqlDriver>) : [],
+    scores
   });
 });

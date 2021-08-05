@@ -26,10 +26,15 @@ block content
       //- if canEdit
       //-   a(class="mx-2" href=`/users/${name}/edit`) Edit
 
+    each letter of letters
+      a(href=`#${letter} ` class="pr-1")= letter
+
     table
       thead
         tr
           th(class="song-title") Song
+          if canEdit
+            th Edit
           th Grade
           th Marv
           th Perf
@@ -37,13 +42,23 @@ block content
           th Good
           th Miss
           th Boo
-          if canEdit
-            th Edit
 
       tbody
         each score of scores
-          tr(class=`${score.grade === "AAA" ? "bg-blue-200" : score.grade === "AA" ? "bg-yellow-200" : score.grade === "A" ? "bg-green-300" : ""}`)
-            td(class="song-title")= score.song.name
+          tr(
+            class=`${score.grade === "AAA" ? "bg-blue-200" : score.grade === "AA" ? "bg-yellow-200" : score.grade === "A" ? "bg-green-300" : ""}`
+            id=score.anchor
+          )
+            td(class="song-title")
+              =score.song.name
+              if score.grade == "AA"
+                =` (${score.great}g)`
+            if canEdit
+              td
+                if score.id
+                  a(href=`/submit_scores/${score.id}/edit`)= "Edit"
+                else
+                  a(href=`/submit_scores?song_id=${score.song.id}`)= "Edit"
             td= score.grade
             td= score.marvelous
             td= score.perfect
@@ -51,9 +66,3 @@ block content
             td= score.good
             td= score.miss
             td= score.boo
-            if canEdit
-              td
-                if score.id
-                  a(href=`/submit_scores/${score.id}/edit`)= "Edit"
-                else
-                  a(href=`/submit_scores?song_id=${score.song.id}`)= "Edit"
