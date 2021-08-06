@@ -1,6 +1,19 @@
 extends ../layout.pug
 
+
 block content
+
+  script.
+    function scrollToAnchor (letter) {
+      const isMobile = window.innerWidth < 768
+      const [$mobile, $desktop] = document.querySelectorAll(`#${letter}`)
+      if (isMobile) {
+        $mobile.scrollIntoView()
+      } else {
+        $desktop.scrollIntoView()
+      }
+    }
+
   style.
     th, td {
       padding: 2px 4px;
@@ -19,15 +32,15 @@ block content
   else
     h1(class="text-2xl mb-2")= `Profile for ${user.username}`
     div(class="flex mb-2")
-      if user.twitter
-        a(href=`https://twitter.com/${user.twitter}` class="underline text-blue-500")= `@${user.twitter}`
+      div(class="flex flex-col")
+        p= `Scores: ${scoreCount}`
+        p= `Total great count: ${greats}`
+
       if flag
         div(class="mx-2")= `${flag}`
-      //- if canEdit
-      //-   a(class="mx-2" href=`/users/${name}/edit`) Edit
 
     each letter of letters
-      a(href=`#${letter} ` class="pr-1")= letter
+      a(href=`#${letter} ` class="pr-1" onclick=`scrollToAnchor("${letter}")`)= letter
 
     table
       thead
