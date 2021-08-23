@@ -153,3 +153,9 @@ sudo certbot --nginx -d revolutionstreet.xyz -d www.revolutionstreet.xyz
 ## Start the app
 
 DB_USER=XXXX DB_PASSWORD=XXX node src/index.js
+
+## Adding a Migration
+
+```sh
+sqitch add 2020_08_23_add_image_to_scores
+```

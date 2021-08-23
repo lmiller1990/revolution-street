@@ -20,13 +20,19 @@ block content
       text-transform: capitalize;
     }
 
-  form(id="submit-scores" action=`/submit_scores/${score.id}` method="post" class="flex flex-col items-start")
+  form(
+    id="submit-scores" 
+    action=`/submit_scores/${score.id}` 
+    method="post" 
+    class="flex flex-col items-start"
+    enctype="multipart/form-data"
+  )
     h1(class="text-2xl my-2")= `Editing score for ${score.song.name}`
 
     input(type="hidden" name="id" value=score.id)
 
     div
-      each timing of ["marvelous", "perfect", "great", "good", "miss", "boo"]
+      each timing of ["perfect", "great", "good", "miss", "boo"]
         div(class="w-full flex my-1")
           label(for=timing class="timings")= `${timing}:`
           input(
@@ -50,5 +56,8 @@ block content
           option(value=grade selected)= grade
         else
           option(value=grade)= grade
+    
+    label(for="image") image:
+    input(type="file" name="image") 
       
     button(type="submit") Submit

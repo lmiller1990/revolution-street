@@ -49,7 +49,6 @@ block content
           if canEdit
             th Edit
           th Grade
-          th Marv
           th Perf
           th Great
           th Good
@@ -73,7 +72,6 @@ block content
                 else
                   a(href=`/submit_scores?song_id=${score.song.id}`)= "Edit"
             td= score.grade
-            td= score.marvelous
             td= score.perfect
             td= score.great
             td= score.good

@@ -1,6 +1,7 @@
 import { MikroORM } from "@mikro-orm/core";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { Request, Response, Router } from "express";
+import multer from 'multer'
 import { orm } from "..";
 import { Score } from "../entities/Score";
 import { Song } from "../entities/Song";
@@ -24,6 +25,7 @@ export interface ScoreForm<T> {
 
 export async function createScore(
   form: ScoreForm<string>,
+  filename: string | undefined,
   { orm, userId }: { orm: MikroORM; userId: number }
 ) {
   const toNum = (num: string) => (num === "" ? 0 : parseInt(num, 10));
@@ -44,6 +46,7 @@ export async function createScore(
     alreadyHasScore.miss = toNum(form.miss)
     alreadyHasScore.boo = toNum(form.boo)
     alreadyHasScore.grade = form.grade
+    alreadyHasScore.image = filename
     return orm.em.persist(alreadyHasScore).flush()
   }
 
@@ -55,6 +58,7 @@ export async function createScore(
     miss: toNum(form.miss),
     boo: toNum(form.boo),
     songId: song!.id,
+    image: filename,
     grade: form.grade,
     userId,
   });
@@ -120,6 +124,7 @@ submitScores.get(
 async function updateScore(
   form: ScoreForm<string> & { id: string },
   userId: number | undefined,
+  filename: string | undefined,
   orm: MikroORM<PostgreSqlDriver>
 ) {
   const score = await orm.em.findOneOrFail(Score, {
@@ -136,14 +141,21 @@ async function updateScore(
   score.good = parseInt(form.good, 10);
   score.boo = parseInt(form.boo, 10);
   score.miss = parseInt(form.miss, 10);
+  score.image = filename
   score.grade = form.grade;
 
   return orm.em.persist(score).flush();
 }
 
+const upload = multer({
+  dest: "./uploads",
+  limits: { fieldSize: 10 * 1024 * 1024 },
+});
+
 submitScores.post(
   "/:score_id",
   mustAuthenticate,
+  upload.single('image'),
   async (req: Request<{ score_id: string }>, res: Response) => {
     const user = req.user as User;
 
@@ -151,6 +163,7 @@ submitScores.post(
       await updateScore(
         req.body,
         user.id,
+        req.file?.filename ?? undefined,
         orm as MikroORM<PostgreSqlDriver>
       );
 
@@ -164,9 +177,10 @@ submitScores.post(
 submitScores.post(
   "/",
   mustAuthenticate,
+  upload.single('image'),
   async (req: Request, res: Response) => {
     const user = req.user as User;
-    await createScore(req.body, { orm, userId: (req.user as User).id });
+    await createScore(req.body, req.file?.filename ?? undefined, { orm, userId: (req.user as User).id });
     return res.redirect(`/users/${user.username}`);
   }
 );
