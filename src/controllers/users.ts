@@ -29,7 +29,7 @@ const userVM = (users: User[]) => {
 };
 
 interface ScoreSummary extends Omit<ScoreForm<string>, "song"> {
-  song: { id: string; name: string };
+  song: { id: string; name: string, image?: string };
   id?: string;
 }
 
@@ -61,7 +61,7 @@ const showUser = async (user: User, orm: MikroORM<PostgreSqlDriver>) => {
 
       return {
         id: score.id.toString(),
-        marvelous: (score.marvelous || 0).toString(),
+        image: score.image,
         perfect: (score.perfect || 0).toString(),
         great: (score.great || 0).toString(),
         good: (score.good || 0).toString(),
@@ -77,7 +77,6 @@ const showUser = async (user: User, orm: MikroORM<PostgreSqlDriver>) => {
 
     return {
       id: undefined,
-      marvelous: "-",
       perfect: "-",
       great: "-",
       good: "-",

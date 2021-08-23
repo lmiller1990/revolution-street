@@ -1,7 +1,9 @@
+import fs from "fs";
+import path from "path";
 import { MikroORM } from "@mikro-orm/core";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { Request, Response, Router } from "express";
-import multer from 'multer'
+import multer from "multer";
 import { orm } from "..";
 import { Score } from "../entities/Score";
 import { Song } from "../entities/Song";
@@ -13,7 +15,6 @@ export const submitScores = Router();
 export type Grade = "AAA" | "AA" | "A" | "B" | "C" | "D" | "E" | "-";
 
 export interface ScoreForm<T> {
-  marvelous: T;
   perfect: T;
   great: T;
   good: T;
@@ -26,32 +27,36 @@ export interface ScoreForm<T> {
 export async function createScore(
   form: ScoreForm<string>,
   filename: string | undefined,
-  { orm, userId }: { orm: MikroORM; userId: number }
+  userId: number,
+  orm: MikroORM
 ) {
   const toNum = (num: string) => (num === "" ? 0 : parseInt(num, 10));
 
   const song = await orm.em.findOne(Song, { id: parseInt(form.song, 10) });
 
   if (!song) {
-    throw Error(`Could not create score for unknown song with id: ${form.song}.`)
+    throw Error(
+      `Could not create score for unknown song with id: ${form.song}.`
+    );
   }
 
-  const alreadyHasScore = await orm.em.findOne(Score, { songId: song.id, userId });
+  const alreadyHasScore = await orm.em.findOne(Score, {
+    songId: song.id,
+    userId,
+  });
 
   if (alreadyHasScore) {
-    alreadyHasScore.marvelous = toNum(form.marvelous)
-    alreadyHasScore.perfect = toNum(form.perfect)
-    alreadyHasScore.great = toNum(form.great)
-    alreadyHasScore.good = toNum(form.good)
-    alreadyHasScore.miss = toNum(form.miss)
-    alreadyHasScore.boo = toNum(form.boo)
-    alreadyHasScore.grade = form.grade
-    alreadyHasScore.image = filename
-    return orm.em.persist(alreadyHasScore).flush()
+    alreadyHasScore.perfect = toNum(form.perfect);
+    alreadyHasScore.great = toNum(form.great);
+    alreadyHasScore.good = toNum(form.good);
+    alreadyHasScore.miss = toNum(form.miss);
+    alreadyHasScore.boo = toNum(form.boo);
+    alreadyHasScore.grade = form.grade;
+    alreadyHasScore.image = filename;
+    return orm.em.persist(alreadyHasScore).flush();
   }
 
   const score = orm.em.create(Score, {
-    marvelous: toNum(form.marvelous),
     perfect: toNum(form.perfect),
     great: toNum(form.great),
     good: toNum(form.good),
@@ -135,13 +140,12 @@ async function updateScore(
     throw Error(`Not authorized to edit this score`);
   }
 
-  score.marvelous = parseInt(form.marvelous, 10);
   score.perfect = parseInt(form.perfect, 10);
   score.great = parseInt(form.great, 10);
   score.good = parseInt(form.good, 10);
   score.boo = parseInt(form.boo, 10);
   score.miss = parseInt(form.miss, 10);
-  score.image = filename
+  score.image = filename;
   score.grade = form.grade;
 
   return orm.em.persist(score).flush();
@@ -152,18 +156,28 @@ const upload = multer({
   limits: { fieldSize: 10 * 1024 * 1024 },
 });
 
+const getExt = (mimetype?: string) => mimetype?.split("/")?.[1] ?? undefined;
+
 submitScores.post(
   "/:score_id",
   mustAuthenticate,
-  upload.single('image'),
+  upload.single("image"),
   async (req: Request<{ score_id: string }>, res: Response) => {
+    const ext = getExt(req.file?.mimetype);
     const user = req.user as User;
+    const filename = (req.file && `${req.file?.filename}.${ext}`) ?? undefined;
+    if (req.file && filename) {
+      fs.renameSync(
+        path.resolve(process.cwd(), req.file.path),
+        path.resolve(process.cwd(), "uploads", filename)
+      );
+    }
 
     try {
       await updateScore(
         req.body,
         user.id,
-        req.file?.filename ?? undefined,
+        filename,
         orm as MikroORM<PostgreSqlDriver>
       );
 
@@ -177,10 +191,19 @@ submitScores.post(
 submitScores.post(
   "/",
   mustAuthenticate,
-  upload.single('image'),
+  upload.single("image"),
   async (req: Request, res: Response) => {
     const user = req.user as User;
-    await createScore(req.body, req.file?.filename ?? undefined, { orm, userId: (req.user as User).id });
+    const ext = getExt(req.file?.mimetype);
+    const filename = (req.file && `${req.file?.filename}.${ext}`) ?? undefined;
+    if (req.file && filename) {
+      fs.renameSync(
+        path.resolve(process.cwd(), req.file.path),
+        path.resolve(process.cwd(), "uploads", filename)
+      );
+    }
+
+    await createScore(req.body, filename, (req.user as User).id, orm);
     return res.redirect(`/users/${user.username}`);
   }
 );

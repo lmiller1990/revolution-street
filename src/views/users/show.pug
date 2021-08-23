@@ -54,6 +54,7 @@ block content
           th Good
           th Miss
           th Boo
+          th Photo
 
       tbody
         each score of scores
@@ -77,3 +78,6 @@ block content
             td= score.good
             td= score.miss
             td= score.boo
+            td
+              if score.image
+                a(href=`/images/${score.image}`) Link

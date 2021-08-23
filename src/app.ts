@@ -35,13 +35,14 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use("/images", express.static("./uploads"));
 
 app.set("view engine", "pug");
 app.set("views", "./src/views");
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.locals.authenticated = !!req.user;
-  res.locals.currentUser = req.user as User
+  res.locals.currentUser = req.user as User;
   next();
 });
 

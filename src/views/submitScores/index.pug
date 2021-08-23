@@ -20,7 +20,13 @@ block content
       text-transform: capitalize;
     }
 
-  form(id="submit-scores" action="/submit_scores" method="post" class="flex flex-col items-start")
+  form(
+    id="submit-scores" 
+    action="/submit_scores" 
+    method="post" 
+    class="flex flex-col items-start"
+    enctype="multipart/form-data"
+  )
     div(class="flex")
       label(for="song" class="timings") Song:
       select(name="song" class="border border-purple-500 p-1")
@@ -54,5 +60,8 @@ block content
             option(value=grade selected)= grade
           else
             option(value=grade)= grade
+
+    label(for="image") image:
+    input(type="file" name="image") 
       
     button(type="submit") Submit
