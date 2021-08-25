@@ -153,7 +153,7 @@ async function updateScore(
 
 const upload = multer({
   dest: "./uploads",
-  limits: { fieldSize: 10 * 1024 * 1024 },
+  limits: { fieldSize: 20 * 1024 * 1024 },
 });
 
 const getExt = (mimetype?: string) => mimetype?.split("/")?.[1] ?? undefined;
