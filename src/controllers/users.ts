@@ -33,7 +33,7 @@ interface ScoreSummary extends Omit<ScoreForm<string>, "song"> {
   id?: string;
 }
 
-const showUser = async (user: User, orm: MikroORM<PostgreSqlDriver>) => {
+const showUser = async (user: User, orm: MikroORM<PostgreSqlDriver>, sortByGreats: boolean = false) => {
   const songs = (await orm.em.find(Song, {})).sort((x, y) =>
     y.name.localeCompare(x.name)
   );
@@ -90,8 +90,20 @@ const showUser = async (user: User, orm: MikroORM<PostgreSqlDriver>) => {
     };
   });
 
+  const byName = (x: ScoreSummary, y: ScoreSummary) => x.song.name.localeCompare(y.song.name)
+  const byGreats = (x: ScoreSummary, y: ScoreSummary) => {
+    const xGreat = parseInt(x.great, 10)
+    const yGreat = parseInt(y.great, 10)
+
+    if (isNaN(yGreat)) {
+      return -1
+    }
+
+    return yGreat - xGreat
+  }
+
   return {
-    scores: summary.sort((x, y) => x.song.name.localeCompare(y.song.name)),
+    scores: summary.sort(sortByGreats ? byGreats : byName),
     scoreCount
   }
 };
@@ -101,18 +113,26 @@ users.get("/", async (req: Request, res: Response) => {
   res.render("./users/index", { users: userVM(all) });
 });
 
-users.get("/:username", async (req: Request, res: Response) => {
+users.get("/:username", async (req: Request<{ username: string }, {}, {}, { sort: string }>, res: Response) => {
   const user = await orm.em.findOne(User, { username: req.params.username });
   const currentUser = req.user as User
 
   let { scores, scoreCount } = user
-    ? await showUser(user!, orm as MikroORM<PostgreSqlDriver>)
+    ? await showUser(user!, orm as MikroORM<PostgreSqlDriver>, req.query.sort === 'greats')
     : { scores: [], scoreCount: 0 };
 
-  const greats = scores.reduce((acc, curr) => {
-    const asInt = parseInt(curr.great, 10)
-    return acc + (isNaN(asInt) ? 0 : asInt)
-  }, 0)
+  const { greats, sdgs, aaaCount } = scores.reduce(
+    (acc, curr) => {
+      const asInt = parseInt(curr.great, 10);
+      return {
+        greats: acc.greats + (isNaN(asInt) ? 0 : asInt),
+        sdgs: !isNaN(asInt) && asInt > 0 && asInt < 9 ? acc.sdgs + 1 : acc.sdgs,
+        aaaCount: curr.grade === 'AAA' ? acc.aaaCount + 1 : acc.aaaCount
+      }
+    },
+    { greats: 0, sdgs: 0, aaaCount: 0 }
+  );
+
 
   const foundLetter = new Set<string>()
   scores = scores.map<ScoreSummary & { anchor?: string }>((score) => {
@@ -135,8 +155,10 @@ users.get("/:username", async (req: Request, res: Response) => {
     name: req.params.username,
     scoreCount: `${scoreCount} / ${scores.length}`,
     flag: user && user.region && countryMap[user.region]?.flag,
+    sdgs,
     canEdit: currentUser && user && currentUser.id === user.id,
     scores,
-    greats
+    greats,
+    aaaCount
   });
 });

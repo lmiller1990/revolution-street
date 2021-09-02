@@ -31,16 +31,32 @@ block content
     div= `${name} does not exist.`
   else
     h1(class="text-2xl mb-2")= `Profile for ${user.username}`
-    div(class="flex mb-2")
+    table
+      thead
+        tr
+          th Scores
+          th AAA
+          th SDG
+          th Greats
+      tbody
+        tr 
+          td= scoreCount
+          td= aaaCount
+          td= sdgs
+          td= greats
+    div(class="flex my-2")
       div(class="flex flex-col")
-        p= `Scores: ${scoreCount}`
-        p= `Total great count: ${greats}`
+        p
+          a(href="?sort=greats") Sort by greats
+        p
+          a(href="?sort=") Sort by name
 
       if flag
         div(class="mx-2")= `${flag}`
 
-    each letter of letters
-      a(href=`#${letter} ` class="pr-1" onclick=`scrollToAnchor("${letter}")`)= letter
+    div(style="width: 384px")
+      each letter of letters
+        a(href=`#${letter} ` class="pr-1" onclick=`scrollToAnchor("${letter}")`)= letter
 
     table
       thead
@@ -64,8 +80,6 @@ block content
           )
             td(class="song-title")
               =score.song.name
-              if score.grade == "AA"
-                =` (${score.great}g)`
             if canEdit
               td
                 if score.id
