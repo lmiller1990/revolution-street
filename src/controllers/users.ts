@@ -126,7 +126,7 @@ users.get("/:username", async (req: Request<{ username: string }, {}, {}, { sort
       const asInt = parseInt(curr.great, 10);
       return {
         greats: acc.greats + (isNaN(asInt) ? 0 : asInt),
-        sdgs: !isNaN(asInt) && asInt > 0 && asInt < 9 ? acc.sdgs + 1 : acc.sdgs,
+        sdgs: !isNaN(asInt) && asInt >= 0 && asInt <= 9 ? acc.sdgs + 1 : acc.sdgs,
         aaaCount: curr.grade === 'AAA' ? acc.aaaCount + 1 : acc.aaaCount
       }
     },
@@ -155,7 +155,7 @@ users.get("/:username", async (req: Request<{ username: string }, {}, {}, { sort
     name: req.params.username,
     scoreCount: `${scoreCount} / ${scores.length}`,
     flag: user && user.region && countryMap[user.region]?.flag,
-    sdgs,
+    sdgs: `${sdgs} / ${scores.length}`,
     canEdit: currentUser && user && currentUser.id === user.id,
     scores,
     greats,
