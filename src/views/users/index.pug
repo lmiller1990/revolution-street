@@ -10,20 +10,8 @@ block content
       width: 150px;
     }
 
-    .region {
-      width: 150px;
-    }
-
-    .last-active {
-      width: 150px;
-    }
-
-    .links {
-      width: 200px;
-    }
-  
   div(class="md:hidden")
-    h1(class="text-2xl") Rankings
+    h1(class="text-2xl") Players
     each user, idx in users
       div
         a(
@@ -36,32 +24,12 @@ block content
 
   div(class="hidden md:block")
     div.flex
-      .rank Rank
       .player Player
-      .region Region
-      .last-active Last Active
-      .links Links
 
     each user of users
       div(class="flex")
-        .rank= user.rank
         a(
           class="underline text-blue-500 player overflow-ellipsis overflow-hidden whitespace-nowrap"
           href=`/users/${user.username}`
         )= user.username
 
-        div(
-          title=user.region 
-          class="region overflow-ellipsis overflow-hidden whitespace-nowrap"
-        )= user.region
-
-        div(class="last-active")= user.lastActive
-
-        div(class="links")
-          if user.twitter
-            a(
-              href=`https://twitter.com/${user.twitter}`
-              class="underline text-blue-500"
-            )=`${user.twitter}`
-          else
-            | -
